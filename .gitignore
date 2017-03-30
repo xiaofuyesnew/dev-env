@@ -1,0 +1,7 @@
+dist/*
+!dist/README.md
+build/*
+!build/README.md
+dev/*
+!dev/README.md
+node_modules
