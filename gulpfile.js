@@ -9,9 +9,17 @@
  *     gulpfile for gulp config
  * 
  * @update  2017-03-31
+ *     require necessary modules and add normal functions
+ *     mix with webpack
  */
 
+const gulp = require('gulp')    //gulp main module
+const webpack = require('webpack')      //wenpack module
+const config = require('./webpack.config')  //webpack config module
 
-const gulp = require('gulp')
-const browserSync = require('browser-sync').create()
-const reload = browserSync.reload
+
+gulp.task('webpack', (cb) => {
+    return webpack(config, () => {
+        cb()
+    })
+})
