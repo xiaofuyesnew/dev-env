@@ -20,3 +20,14 @@ npm install
 SASS_BINARY_SITE=https://npm.taobao.org/mirrors/node-sass/ npm install
 ```
 
+## src
+source code files directory structure
+
+> src
+>   |-lib    //no code changed js file
+>   |-image  //image files
+>   |-script //customer js files
+>   |-style  //style files sass and css
+>   |   |-sass
+>   |   |-css
+>   |-tpl    //html files 
