@@ -43,9 +43,9 @@ source code files directory structure
 ## commands
 ```
 #create dev and run browser-sync
-gulp dev
+npm run dev
 
 #create dist and minify files
-gulp build
+npm run build
 
 ```
