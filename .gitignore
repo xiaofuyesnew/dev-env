@@ -1,7 +1,8 @@
-dist/*
-!dist/README.md
-build/*
-!build/README.md
-dev/*
-!dev/README.md
+dist
+build
+dev
 node_modules
+src
+
+.DS_store
+
