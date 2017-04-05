@@ -26,8 +26,6 @@ const babel = require('gulp-babel')     //babel module
 const clean = require('gulp-clean')    //clean module
 const htmlminify = require('gulp-html-minify') //htmlminify module
 const cleanCSS = require('gulp-clean-css')   //clean css module
-const inject = require('gulp-inject')    //inject module
-const rename = require('gulp-rename')   //rename module
 const sass = require('gulp-sass')   //sass module
 const uglify = require('gulp-uglifyjs')   //uglify module
 
