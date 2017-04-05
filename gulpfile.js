@@ -41,3 +41,11 @@ gulp.task('copy', () => {
     gulp.src('src/image/*.*')
         .pipe(gulp.dest('dist/static/image'))
 })
+
+gulp.task('tpl', () => {
+    
+})
+
+gulp.task('dev', ['copy'])
+
+gulp.task('build', ['copy'])
