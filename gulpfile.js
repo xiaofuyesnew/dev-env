@@ -30,7 +30,7 @@ const pump = require('pump')    //uglify need this
 const browserSync = require('browser-sync').create()
 const reload = browserSync.reload
 
-/**s
+/**
  * copy lib files and images to dist 
  */
 gulp.task('copy', () => {
