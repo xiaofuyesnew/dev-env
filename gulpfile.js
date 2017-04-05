@@ -18,12 +18,14 @@
  * 
  * @update  2017-04-05
  *     add detail functions and browserSync surpport
+ *     
  */
 
 const gulp = require('gulp')    //gulp main module
 const babel = require('gulp-babel')     //babel module
 const htmlminify = require('gulp-html-minify') //htmlminify module
 const cleanCSS = require('gulp-clean-css')   //clean css module
+const inject = require('gulp-inject')    //inject module
 const rename = require('gulp-rename')   //rename module
 const sass = require('gulp-sass')   //sass module
 const uglify = require('gulp-uglifyjs')   //uglify module
@@ -32,24 +34,37 @@ const uglify = require('gulp-uglifyjs')   //uglify module
 const browserSync = require('browser-sync').create()
 const reload = browserSync.reload
 
-//copy lib files and images to dist 
-gulp.task('copy', () => {
-    gulp.src('src/lib/js/*.js')
-        .pipe(gulp.dest('dist/static/lib/js'))
-    gulp.src('src/lib/css/*.css')
-        .pipe(gulp.dest('dist/static/lib/css'))
-    gulp.src('src/image/*.*')
+gulp.task('cpimg', () => {
+    return gulp.src('src/image/*.*')
         .pipe(gulp.dest('dist/static/image'))
 })
 
-//copy lib files and images to build
-gulp.task('copy:dev', () => {
-    gulp.src('src/lib/js/*.js')
-        .pipe(gulp.dest('build/static/lib/js'))
-    gulp.src('src/lib/css/*.css')
-        .pipe(gulp.dest('build/static/lib/css'))
-    gulp.src('src/image/*.*')
-        .pipe(gulp.dest('build/static/image'))
+gulp.task('cpimg:dev', () => {
+    return gulp.src('src/image/*.*')
+        .pipe(gulp.dest('dev/static/image'))
+        .pipe(reload({stream: true}))
+})
+
+gulp.task('cpjs', () => {
+    return gulp.src('src/lib/dist/js/*.js')
+        .pipe(gulp.dest('dist/static/lib/js'))
+})
+
+gulp.task('cpjs:dev', () => {
+    return gulp.src('src/lib/dev/js/*.js')
+        .pipe(gulp.dest('dev/static/lib/js'))
+        .pipe(reload({stream: true}))
+})
+
+gulp.task('cpcss', () => {
+    return gulp.src('src/lib/dist/css/*.css')
+        .pipe(gulp.dest('dist/static/lib/css'))
+})
+
+gulp.task('cpcss:dev', () => {
+    return gulp.src('src/lib/dev/css/*.css')
+        .pipe(gulp.dest('dev/static/lib/css'))
+        .pipe(reload({stream: true}))
 })
 
 //compile and uglify js
@@ -58,7 +73,7 @@ gulp.task('js', () => {
         .pipe(babel({
             presets: ['es2015']
         }))
-        .pipe(uglify('app.min.js'))
+        .pipe(uglify())
         .pipe(gulp.dest('dist/static/js'))
 })
 
@@ -68,7 +83,8 @@ gulp.task('js:dev', () => {
         .pipe(babel({
             presets: ['es2015']
         }))
-        .pipe(gulp.dest('dist/static/js'))
+        .pipe(gulp.dest('dev/static/js'))
+        .pipe(reload({stream: true}))
 })
 
 //sass compile with compressed
@@ -77,9 +93,6 @@ gulp.task('sass', () => {
         gulp.src('src/style/sass/*.scss')
             .pipe(sass({outputStyle: 'compressed'})
                 .on('error', sass.logError))
-            .pipe(rename((path) => {
-                path.basename += '.min'
-            }))
             .pipe(gulp.dest('dist/static/css'))
     }, 500)
 })
@@ -89,7 +102,8 @@ gulp.task('sass:dev', () => {
     return setTimeout(() => {
         gulp.src('src/style/sass/*.scss')
             .pipe(sass().on('error', sass.logError))
-            .pipe(gulp.dest('build/static/css'))
+            .pipe(gulp.dest('dev/static/css'))
+            .pipe(reload({stream: true}))
     }, 500)
 })
 
@@ -97,40 +111,57 @@ gulp.task('sass:dev', () => {
 gulp.task('css', () => {
     return gulp.src('src/style/css/*.css')
         .pipe(cleanCSS())
-        .pipe(rename((path) => {
-            path.basename += '.min'
-        }))
         .pipe(gulp.dest('dist/static/css'))
 })
 
 //css copy without compressed
 gulp.task('css:dev', () => {
     return gulp.src('src/style/css/*.css')
-        .pipe(gulp.dest('build/static/css'))
+        .pipe(gulp.dest('dev/static/css'))
+        .pipe(reload({stream: true}))
 })
 
 //html copy with compressed
 gulp.task('tpl', () => {
     return gulp.src('src/tpl/*.html')
         .pipe(htmlminify())
-        .pipe(gulp.dest('build'))
+        .pipe(gulp.dest('dist'))
 })
 
 //html copy without compressed
 gulp.task('tpl:dev', () => {
     return gulp.src('src/tpl/*.html')
-        .pipe(gulp.dest('dist'))
+        .pipe(gulp.dest('dev'))
+        .pipe(reload({stream: true}))
 })
 
 gulp.task('dev', [
-    'copy:dev', 
+    'cpimg:dev', 
+    'cpjs:dev', 
+    'cpcss:dev',  
     'js:dev', 
     'sass:dev', 
     'css:dev', 
-    'tpl:dev'])
+    'tpl:dev'], () => {
+        browserSync.init({
+            server: {
+                baseDir: "./dev"
+            },
+            notify: false
+        })
+        gulp.watch('src/image/*.*', ['cpimg:dev'])
+        gulp.watch('src/lib/dev/js/*.js', ['cpjs:dev'])
+        gulp.watch('src/lib/dev/css/*.css', ['cpcss:dev'])
+        gulp.watch('src/script/*.js', ['js:dev'])
+        gulp.watch('src/style/sass/*.scss', ['sass:dev'])
+        gulp.watch('src/style/css/*.css', ['css:dev'])
+        gulp.watch('src/tpl/*.html', ['tpl:dev'])
+    })
 
 gulp.task('build', [
-    'copy', 
+    'cpimg', 
+    'cpjs', 
+    'cpcss', 
     'js', 
     'sass', 
     'css', 
